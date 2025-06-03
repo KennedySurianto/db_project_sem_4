@@ -9,12 +9,12 @@ CREATE TABLE users (
     last_login DATE
 );
 
--- DDL for customers table
+-- DDL for customers table (LEVEL renamed to customer_level)
 CREATE TABLE customers (
     id NUMBER PRIMARY KEY,
     wallet_balance NUMBER(10, 2) DEFAULT 0.00 NOT NULL,
     date_of_birth DATE,
-    level VARCHAR2(50),
+    customer_level VARCHAR2(50), -- Renamed from LEVEL
     CONSTRAINT fk_customers_users FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -112,158 +112,159 @@ CREATE TABLE gamereviews (
 );
 
 
--- DML for users table
-INSERT ALL
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Alice Smith', 'alice.smith@example.com', 'hashedpass1', 'alice.jpg', TO_DATE('2023-01-15', 'YYYY-MM-DD'), TO_DATE('2024-05-30', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Bob Johnson', 'bob.j@example.com', 'hashedpass2', 'bob.png', TO_DATE('2022-11-20', 'YYYY-MM-DD'), TO_DATE('2024-06-01', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Charlie Brown', 'charlie.b@example.com', 'hashedpass3', NULL, TO_DATE('2023-03-10', 'YYYY-MM-DD'), TO_DATE('2024-05-28', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Diana Prince', 'diana.p@example.com', 'hashedpass4', 'diana.gif', TO_DATE('2022-07-01', 'YYYY-MM-DD'), TO_DATE('2024-06-02', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Ethan Hunt', 'ethan.h@example.com', 'hashedpass5', NULL, TO_DATE('2023-09-05', 'YYYY-MM-DD'), TO_DATE('2024-05-29', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Fiona Green', 'fiona.g@example.com', 'hashedpass6', 'fiona.jpeg', TO_DATE('2022-04-12', 'YYYY-MM-DD'), TO_DATE('2024-05-27', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('George White', 'george.w@example.com', 'hashedpass7', NULL, TO_DATE('2023-06-18', 'YYYY-MM-DD'), TO_DATE('2024-06-01', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Hannah Blue', 'hannah.b@example.com', 'hashedpass8', 'hannah.svg', TO_DATE('2022-08-25', 'YYYY-MM-DD'), TO_DATE('2024-05-31', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Ivy Black', 'ivy.b@example.com', 'hashedpass9', NULL, TO_DATE('2023-02-14', 'YYYY-MM-DD'), TO_DATE('2024-05-26', 'YYYY-MM-DD'))
-    INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Jack Red', 'jack.r@example.com', 'hashedpass10', 'jack.webp', TO_DATE('2022-10-03', 'YYYY-MM-DD'), TO_DATE('2024-06-02', 'YYYY-MM-DD'))
-SELECT 1 FROM DUAL;
+-- DML for tables
 
--- DML for customers table
-INSERT ALL
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (1, 150.75, TO_DATE('1990-05-20', 'YYYY-MM-DD'), 'Gold')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (2, 25.00, TO_DATE('1995-11-11', 'YYYY-MM-DD'), 'Silver')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (3, 500.00, TO_DATE('2000-01-01', 'YYYY-MM-DD'), 'Platinum')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (4, 10.50, TO_DATE('1988-03-15', 'YYYY-MM-DD'), 'Bronze')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (5, 0.00, TO_DATE('1992-07-22', 'YYYY-MM-DD'), 'Silver')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (6, 300.20, TO_DATE('1985-09-08', 'YYYY-MM-DD'), 'Gold')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (7, 75.00, TO_DATE('1998-02-28', 'YYYY-MM-DD'), 'Bronze')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (8, 120.99, TO_DATE('1993-04-03', 'YYYY-MM-DD'), 'Silver')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (9, 45.60, TO_DATE('1996-06-17', 'YYYY-MM-DD'), 'Bronze')
-    INTO customers (id, wallet_balance, date_of_birth, level) VALUES (10, 200.00, TO_DATE('1980-12-05', 'YYYY-MM-DD'), 'Platinum')
-SELECT 1 FROM DUAL;
+-- PL/SQL block to handle insertions and retrieve generated IDs
+DECLARE
+    v_user_id NUMBER;
+    v_achievement_id NUMBER;
+    v_gameserver_id NUMBER;
+    v_genre_id NUMBER;
+    v_game_id NUMBER;
+    v_purchase_id NUMBER;
+    v_gamereview_id NUMBER;
 
--- DML for developers table
-INSERT ALL
-    INTO developers (id, website) VALUES (1, 'www.gamingdev.com')
-    INTO developers (id, website) VALUES (2, 'www.creativegames.net')
-    INTO developers (id, website) VALUES (3, 'www.indieforge.org')
-    INTO developers (id, website) VALUES (4, 'www.epiccreations.com')
-    INTO developers (id, website) VALUES (5, 'www.dreamworks.studio')
-    INTO developers (id, website) VALUES (6, 'www.phoenixgames.co')
-    INTO developers (id, website) VALUES (7, 'www.starlightinteractive.dev')
-    INTO developers (id, website) VALUES (8, 'www.quantumplay.tech')
-    INTO developers (id, website) VALUES (9, 'www.pixelpioneers.xyz')
-    INTO developers (id, website) VALUES (10, 'www.futuresoft.games')
-SELECT 1 FROM DUAL;
+    -- Arrays to store generated IDs for foreign key relationships
+    TYPE num_array IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+    user_ids num_array;
+    developer_ids num_array;
+    genre_ids num_array;
+    game_ids num_array;
+    achievement_ids num_array;
+BEGIN
+    -- DML for users table
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Alice Smith', 'alice.smith@example.com', 'hashedpass1', 'alice.jpg', TO_DATE('2023-01-15', 'YYYY-MM-DD'), TO_DATE('2024-05-30', 'YYYY-MM-DD')) RETURNING id INTO user_ids(1);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Bob Johnson', 'bob.j@example.com', 'hashedpass2', 'bob.png', TO_DATE('2022-11-20', 'YYYY-MM-DD'), TO_DATE('2024-06-01', 'YYYY-MM-DD')) RETURNING id INTO user_ids(2);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Charlie Brown', 'charlie.b@example.com', 'hashedpass3', NULL, TO_DATE('2023-03-10', 'YYYY-MM-DD'), TO_DATE('2024-05-28', 'YYYY-MM-DD')) RETURNING id INTO user_ids(3);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Diana Prince', 'diana.p@example.com', 'hashedpass4', 'diana.gif', TO_DATE('2022-07-01', 'YYYY-MM-DD'), TO_DATE('2024-06-02', 'YYYY-MM-DD')) RETURNING id INTO user_ids(4);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Ethan Hunt', 'ethan.h@example.com', 'hashedpass5', NULL, TO_DATE('2023-09-05', 'YYYY-MM-DD'), TO_DATE('2024-05-29', 'YYYY-MM-DD')) RETURNING id INTO user_ids(5);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Fiona Green', 'fiona.g@example.com', 'hashedpass6', 'fiona.jpeg', TO_DATE('2022-04-12', 'YYYY-MM-DD'), TO_DATE('2024-05-27', 'YYYY-MM-DD')) RETURNING id INTO user_ids(6);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('George White', 'george.w@example.com', 'hashedpass7', NULL, TO_DATE('2023-06-18', 'YYYY-MM-DD'), TO_DATE('2024-06-01', 'YYYY-MM-DD')) RETURNING id INTO user_ids(7);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Hannah Blue', 'hannah.b@example.com', 'hashedpass8', 'hannah.svg', TO_DATE('2022-08-25', 'YYYY-MM-DD'), TO_DATE('2024-05-31', 'YYYY-MM-DD')) RETURNING id INTO user_ids(8);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Ivy Black', 'ivy.b@example.com', 'hashedpass9', NULL, TO_DATE('2023-02-14', 'YYYY-MM-DD'), TO_DATE('2024-05-26', 'YYYY-MM-DD')) RETURNING id INTO user_ids(9);
+    INSERT INTO users (name, email, password, profile_picture, creation_date, last_login) VALUES ('Jack Red', 'jack.r@example.com', 'hashedpass10', 'jack.webp', TO_DATE('2022-10-03', 'YYYY-MM-DD'), TO_DATE('2024-06-02', 'YYYY-MM-DD')) RETURNING id INTO user_ids(10);
 
--- DML for achievements table
-INSERT ALL
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('First Blood', 'Achieve your first kill in any game.', 100.00, 'first_blood.png')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Master Explorer', 'Discover 100 hidden areas.', 75.50, 'explorer.jpg')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Speed Run Champion', 'Complete a game in under 2 hours.', 10.20, 'speed_run.gif')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Collector', 'Collect all in-game items.', 5.00, 'collector.svg')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Social Butterfly', 'Make 10 friends in-game.', 90.00, 'social.png')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Legendary Player', 'Reach max level in 5 games.', 2.50, 'legend.jpeg')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Pixel Perfect', 'Complete a game without taking any damage.', 1.00, 'pixel_perfect.png')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Storyteller', 'Read all lore entries in a game.', 20.00, 'storyteller.jpg')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Economist', 'Accumulate 1,000,000 in-game currency.', 15.00, 'economist.gif')
-    INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Innovator', 'Create 5 custom maps.', 8.00, 'innovator.svg')
-SELECT 1 FROM DUAL;
+    -- DML for customers table (using generated user_ids)
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(1), 150.75, TO_DATE('1990-05-20', 'YYYY-MM-DD'), 'Gold');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(2), 25.00, TO_DATE('1995-11-11', 'YYYY-MM-DD'), 'Silver');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(3), 500.00, TO_DATE('2000-01-01', 'YYYY-MM-DD'), 'Platinum');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(4), 10.50, TO_DATE('1988-03-15', 'YYYY-MM-DD'), 'Bronze');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(5), 0.00, TO_DATE('1992-07-22', 'YYYY-MM-DD'), 'Silver');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(6), 300.20, TO_DATE('1985-09-08', 'YYYY-MM-DD'), 'Gold');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(7), 75.00, TO_DATE('1998-02-28', 'YYYY-MM-DD'), 'Bronze');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(8), 120.99, TO_DATE('1993-04-03', 'YYYY-MM-DD'), 'Silver');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(9), 45.60, TO_DATE('1996-06-17', 'YYYY-MM-DD'), 'Bronze');
+    INSERT INTO customers (id, wallet_balance, date_of_birth, customer_level) VALUES (user_ids(10), 200.00, TO_DATE('1980-12-05', 'YYYY-MM-DD'), 'Platinum');
 
--- DML for userachievements table
-INSERT ALL
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (1, 1, TO_DATE('2023-02-01', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (1, 5, TO_DATE('2023-03-10', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (2, 1, TO_DATE('2022-12-05', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (3, 2, TO_DATE('2023-04-20', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (4, 1, TO_DATE('2022-07-10', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (4, 3, TO_DATE('2024-01-15', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (5, 6, TO_DATE('2024-02-28', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (6, 4, TO_DATE('2023-11-01', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (7, 1, TO_DATE('2023-07-07', 'YYYY-MM-DD'))
-    INTO userachievements (user_id, achievement_id, unlock_date) VALUES (8, 2, TO_DATE('2024-03-12', 'YYYY-MM-DD'))
-SELECT 1 FROM DUAL;
+    -- DML for developers table (using generated user_ids)
+    INSERT INTO developers (id, website) VALUES (user_ids(1), 'www.gamingdev.com') RETURNING id INTO developer_ids(1); -- Store developer IDs for games table
+    INSERT INTO developers (id, website) VALUES (user_ids(2), 'www.creativegames.net') RETURNING id INTO developer_ids(2);
+    INSERT INTO developers (id, website) VALUES (user_ids(3), 'www.indieforge.org') RETURNING id INTO developer_ids(3);
+    INSERT INTO developers (id, website) VALUES (user_ids(4), 'www.epiccreations.com') RETURNING id INTO developer_ids(4);
+    INSERT INTO developers (id, website) VALUES (user_ids(5), 'www.dreamworks.studio') RETURNING id INTO developer_ids(5);
+    INSERT INTO developers (id, website) VALUES (user_ids(6), 'www.phoenixgames.co') RETURNING id INTO developer_ids(6);
+    INSERT INTO developers (id, website) VALUES (user_ids(7), 'www.starlightinteractive.dev') RETURNING id INTO developer_ids(7);
+    INSERT INTO developers (id, website) VALUES (user_ids(8), 'www.quantumplay.tech') RETURNING id INTO developer_ids(8);
+    INSERT INTO developers (id, website) VALUES (user_ids(9), 'www.pixelpioneers.xyz') RETURNING id INTO developer_ids(9);
+    INSERT INTO developers (id, website) VALUES (user_ids(10), 'www.futuresoft.games') RETURNING id INTO developer_ids(10);
 
--- DML for gameservers table
-INSERT ALL
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Alpha', '192.168.1.1', 100, 'North America')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Beta', '192.168.1.2', 150, 'Europe')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Gamma', '192.168.1.3', 80, 'Asia')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Delta', '192.168.1.4', 200, 'South America')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Epsilon', '192.168.1.5', 120, 'Australia')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Zeta', '192.168.1.6', 90, 'Africa')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Eta', '192.168.1.7', 180, 'North America')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Theta', '192.168.1.8', 70, 'Europe')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Iota', '192.168.1.9', 250, 'Asia')
-    INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Kappa', '192.168.1.10', 110, 'South America')
-SELECT 1 FROM DUAL;
 
--- DML for genres table
-INSERT ALL
-    INTO genres (name) VALUES ('Action')
-    INTO genres (name) VALUES ('Adventure')
-    INTO genres (name) VALUES ('RPG')
-    INTO genres (name) VALUES ('Strategy')
-    INTO genres (name) VALUES ('Simulation')
-    INTO genres (name) VALUES ('Sports')
-    INTO genres (name) VALUES ('Puzzle')
-    INTO genres (name) VALUES ('Horror')
-    INTO genres (name) VALUES ('Racing')
-    INTO genres (name) VALUES ('Casual')
-SELECT 1 FROM DUAL;
+    -- DML for achievements table
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('First Blood', 'Achieve your first kill in any game.', 100.00, 'first_blood.png') RETURNING id INTO achievement_ids(1);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Master Explorer', 'Discover 100 hidden areas.', 75.50, 'explorer.jpg') RETURNING id INTO achievement_ids(2);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Speed Run Champion', 'Complete a game in under 2 hours.', 10.20, 'speed_run.gif') RETURNING id INTO achievement_ids(3);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Collector', 'Collect all in-game items.', 5.00, 'collector.svg') RETURNING id INTO achievement_ids(4);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Social Butterfly', 'Make 10 friends in-game.', 90.00, 'social.png') RETURNING id INTO achievement_ids(5);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Legendary Player', 'Reach max level in 5 games.', 2.50, 'legend.jpeg') RETURNING id INTO achievement_ids(6);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Pixel Perfect', 'Complete a game without taking any damage.', 1.00, 'pixel_perfect.png') RETURNING id INTO achievement_ids(7);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Storyteller', 'Read all lore entries in a game.', 20.00, 'storyteller.jpg') RETURNING id INTO achievement_ids(8);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Economist', 'Accumulate 1,000,000 in-game currency.', 15.00, 'economist.gif') RETURNING id INTO achievement_ids(9);
+    INSERT INTO achievements (name, description, unlock_percentage, badge_image) VALUES ('Innovator', 'Create 5 custom maps.', 8.00, 'innovator.svg') RETURNING id INTO achievement_ids(10);
 
--- DML for games table
-INSERT ALL
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Cyberpunk 2077', 59.99, TO_DATE('2020-12-10', 'YYYY-MM-DD'), 'An open-world, action-adventure story set in Night City.', 'cp2077.jpg', 'M', 1, 3)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('The Witcher 3: Wild Hunt', 39.99, TO_DATE('2015-05-19', 'YYYY-MM-DD'), 'A fantasy open world RPG with a branching story.', 'witcher3.png', 'M', 1, 3)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Valorant', 0.00, TO_DATE('2020-06-02', 'YYYY-MM-DD'), 'A 5v5 character-based tactical shooter.', 'valorant.webp', 'T', 2, 1)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Minecraft', 26.95, TO_DATE('2011-11-18', 'YYYY-MM-DD'), 'A sandbox video game where players can build anything.', 'minecraft.jpeg', 'E10+', 3, 5)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Apex Legends', 0.00, TO_DATE('2019-02-04', 'YYYY-MM-DD'), 'A free-to-play battle royale game.', 'apex.png', 'T', 4, 1)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Stardew Valley', 14.99, TO_DATE('2016-02-26', 'YYYY-MM-DD'), 'A charming farm life RPG.', 'stardew.jpg', 'E10+', 3, 5)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Grand Theft Auto V', 29.99, TO_DATE('2013-09-17', 'YYYY-MM-DD'), 'An action-adventure game set in the fictional state of San Andreas.', 'gtav.jpg', 'M', 5, 1)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Factorio', 30.00, TO_DATE('2020-08-14', 'YYYY-MM-DD'), 'A construction and management simulation game.', 'factorio.png', 'E', 6, 4)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Red Dead Redemption 2', 49.99, TO_DATE('2018-10-26', 'YYYY-MM-DD'), 'An epic tale of life in America’s unforgiving heartland.', 'rdr2.jpeg', 'M', 5, 2)
-    INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Among Us', 4.99, TO_DATE('2018-06-15', 'YYYY-MM-DD'), 'A multiplayer social deduction game.', 'amongus.png', 'E10+', 7, 7)
-SELECT 1 FROM DUAL;
+    -- DML for userachievements table
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(1), achievement_ids(1), TO_DATE('2023-02-01', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(1), achievement_ids(5), TO_DATE('2023-03-10', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(2), achievement_ids(1), TO_DATE('2022-12-05', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(3), achievement_ids(2), TO_DATE('2023-04-20', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(4), achievement_ids(1), TO_DATE('2022-07-10', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(4), achievement_ids(3), TO_DATE('2024-01-15', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(5), achievement_ids(6), TO_DATE('2024-02-28', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(6), achievement_ids(4), TO_DATE('2023-11-01', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(7), achievement_ids(1), TO_DATE('2023-07-07', 'YYYY-MM-DD'));
+    INSERT INTO userachievements (user_id, achievement_id, unlock_date) VALUES (user_ids(8), achievement_ids(2), TO_DATE('2024-03-12', 'YYYY-MM-DD'));
 
--- DML for userlibrary table
-INSERT ALL
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (1, 1, 250.75, TO_DATE('2024-05-30', 'YYYY-MM-DD'), 'Y', TO_DATE('2023-01-20', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (1, 2, 180.30, TO_DATE('2024-05-25', 'YYYY-MM-DD'), 'N', TO_DATE('2023-02-10', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (2, 3, 500.00, TO_DATE('2024-06-01', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-12-01', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (3, 4, 120.10, TO_DATE('2024-05-28', 'YYYY-MM-DD'), 'N', TO_DATE('2023-03-15', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (4, 5, 300.50, TO_DATE('2024-06-02', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-07-05', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (5, 6, 80.00, TO_DATE('2024-05-29', 'YYYY-MM-DD'), 'N', TO_DATE('2023-09-10', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (6, 7, 400.20, TO_DATE('2024-05-27', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-04-15', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (7, 8, 50.70, TO_DATE('2024-06-01', 'YYYY-MM-DD'), 'N', TO_DATE('2023-06-20', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (8, 9, 210.00, TO_DATE('2024-05-31', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-08-28', 'YYYY-MM-DD'))
-    INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (9, 10, 30.00, TO_DATE('2024-05-26', 'YYYY-MM-DD'), 'N', TO_DATE('2023-02-16', 'YYYY-MM-DD'))
-SELECT 1 FROM DUAL;
+    -- DML for gameservers table
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Alpha', '192.168.1.1', 100, 'North America');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Beta', '192.168.1.2', 150, 'Europe');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Gamma', '192.168.1.3', 80, 'Asia');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Delta', '192.168.1.4', 200, 'South America');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Epsilon', '192.168.1.5', 120, 'Australia');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Zeta', '192.168.1.6', 90, 'Africa');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Eta', '192.168.1.7', 180, 'North America');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Theta', '192.168.1.8', 70, 'Europe');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Iota', '192.168.1.9', 250, 'Asia');
+    INSERT INTO gameservers (name, ip_address, max_players, region) VALUES ('Server Kappa', '192.168.1.10', 110, 'South America');
 
--- DML for purchases table
-INSERT ALL
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (1, 1, TO_DATE('2023-01-18', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (2, 3, TO_DATE('2022-11-25', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (3, 4, TO_DATE('2023-03-12', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (4, 5, TO_DATE('2022-07-03', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (5, 6, TO_DATE('2023-09-08', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (6, 7, TO_DATE('2022-04-13', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (7, 8, TO_DATE('2023-06-19', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (8, 9, TO_DATE('2022-08-26', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (9, 10, TO_DATE('2023-02-15', 'YYYY-MM-DD'), 'Completed')
-    INTO purchases (user_id, game_id, purchase_date, status) VALUES (10, 2, TO_DATE('2022-10-05', 'YYYY-MM-DD'), 'Completed')
-SELECT 1 FROM DUAL;
+    -- DML for genres table
+    INSERT INTO genres (name) VALUES ('Action') RETURNING id INTO genre_ids(1);
+    INSERT INTO genres (name) VALUES ('Adventure') RETURNING id INTO genre_ids(2);
+    INSERT INTO genres (name) VALUES ('RPG') RETURNING id INTO genre_ids(3);
+    INSERT INTO genres (name) VALUES ('Strategy') RETURNING id INTO genre_ids(4);
+    INSERT INTO genres (name) VALUES ('Simulation') RETURNING id INTO genre_ids(5);
+    INSERT INTO genres (name) VALUES ('Sports') RETURNING id INTO genre_ids(6);
+    INSERT INTO genres (name) VALUES ('Puzzle') RETURNING id INTO genre_ids(7);
+    INSERT INTO genres (name) VALUES ('Horror') RETURNING id INTO genre_ids(8);
+    INSERT INTO genres (name) VALUES ('Racing') RETURNING id INTO genre_ids(9);
+    INSERT INTO genres (name) VALUES ('Casual') RETURNING id INTO genre_ids(10);
 
--- DML for gamereviews table
-INSERT ALL
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (1, 1, 4.5, 'Fantastic game, very immersive!', TO_DATE('2023-02-05', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (2, 3, 5.0, 'Best tactical shooter out there.', TO_DATE('2023-01-10', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (3, 4, 4.0, 'Endless creativity, great for all ages.', TO_DATE('2023-04-01', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (4, 5, 4.5, 'Fast-paced action, love the characters.', TO_DATE('2023-07-20', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (5, 6, 5.0, 'Relaxing and addictive farm sim.', TO_DATE('2023-10-15', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (6, 7, 4.0, 'Classic open-world experience.', TO_DATE('2023-05-18', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (7, 8, 4.5, 'Incredibly complex and rewarding factory builder.', TO_DATE('2023-08-22', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (8, 9, 5.0, 'A masterpiece of storytelling and world-building.', TO_DATE('2023-09-01', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (9, 10, 3.5, 'Fun with friends, but sometimes too chaotic.', TO_DATE('2023-03-05', 'YYYY-MM-DD'))
-    INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (10, 2, 4.8, 'Geralt of Rivia is a legend. Best RPG ever.', TO_DATE('2023-11-11', 'YYYY-MM-DD'))
-SELECT 1 FROM DUAL;
+    -- DML for games table (using generated developer_ids and genre_ids)
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Cyberpunk 2077', 59.99, TO_DATE('2020-12-10', 'YYYY-MM-DD'), 'An open-world, action-adventure story set in Night City.', 'cp2077.jpg', 'M', developer_ids(1), genre_ids(3)) RETURNING id INTO game_ids(1);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('The Witcher 3: Wild Hunt', 39.99, TO_DATE('2015-05-19', 'YYYY-MM-DD'), 'A fantasy open world RPG with a branching story.', 'witcher3.png', 'M', developer_ids(1), genre_ids(3)) RETURNING id INTO game_ids(2);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Valorant', 0.00, TO_DATE('2020-06-02', 'YYYY-MM-DD'), 'A 5v5 character-based tactical shooter.', 'valorant.webp', 'T', developer_ids(2), genre_ids(1)) RETURNING id INTO game_ids(3);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Minecraft', 26.95, TO_DATE('2011-11-18', 'YYYY-MM-DD'), 'A sandbox video game where players can build anything.', 'minecraft.jpeg', 'E10+', developer_ids(3), genre_ids(5)) RETURNING id INTO game_ids(4);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Apex Legends', 0.00, TO_DATE('2019-02-04', 'YYYY-MM-DD'), 'A free-to-play battle royale game.', 'apex.png', 'T', developer_ids(4), genre_ids(1)) RETURNING id INTO game_ids(5);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Stardew Valley', 14.99, TO_DATE('2016-02-26', 'YYYY-MM-DD'), 'A charming farm life RPG.', 'stardew.jpg', 'E10+', developer_ids(3), genre_ids(5)) RETURNING id INTO game_ids(6);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Grand Theft Auto V', 29.99, TO_DATE('2013-09-17', 'YYYY-MM-DD'), 'An action-adventure game set in the fictional state of San Andreas.', 'gtav.jpg', 'M', developer_ids(5), genre_ids(1)) RETURNING id INTO game_ids(7);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Factorio', 30.00, TO_DATE('2020-08-14', 'YYYY-MM-DD'), 'A construction and management simulation game.', 'factorio.png', 'E', developer_ids(6), genre_ids(4)) RETURNING id INTO game_ids(8);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Red Dead Redemption 2', 49.99, TO_DATE('2018-10-26', 'YYYY-MM-DD'), 'An epic tale of life in America’s unforgiving heartland.', 'rdr2.jpeg', 'M', developer_ids(5), genre_ids(2)) RETURNING id INTO game_ids(9);
+    INSERT INTO games (game_title, game_price, release_date, description, cover_image, age_rating, developer_id, genre_id) VALUES ('Among Us', 4.99, TO_DATE('2018-06-15', 'YYYY-MM-DD'), 'A multiplayer social deduction game.', 'amongus.png', 'E10+', developer_ids(7), genre_ids(7)) RETURNING id INTO game_ids(10);
 
-COMMIT;
+    -- DML for userlibrary table
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(1), game_ids(1), 250.75, TO_DATE('2024-05-30', 'YYYY-MM-DD'), 'Y', TO_DATE('2023-01-20', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(1), game_ids(2), 180.30, TO_DATE('2024-05-25', 'YYYY-MM-DD'), 'N', TO_DATE('2023-02-10', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(2), game_ids(3), 500.00, TO_DATE('2024-06-01', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-12-01', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(3), game_ids(4), 120.10, TO_DATE('2024-05-28', 'YYYY-MM-DD'), 'N', TO_DATE('2023-03-15', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(4), game_ids(5), 300.50, TO_DATE('2024-06-02', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-07-05', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(5), game_ids(6), 80.00, TO_DATE('2024-05-29', 'YYYY-MM-DD'), 'N', TO_DATE('2023-09-10', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(6), game_ids(7), 400.20, TO_DATE('2024-05-27', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-04-15', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(7), game_ids(8), 50.70, TO_DATE('2024-06-01', 'YYYY-MM-DD'), 'N', TO_DATE('2023-06-20', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(8), game_ids(9), 210.00, TO_DATE('2024-05-31', 'YYYY-MM-DD'), 'Y', TO_DATE('2022-08-28', 'YYYY-MM-DD'));
+    INSERT INTO userlibrary (user_id, game_id, total_play_time, last_played, is_favorite, date_added) VALUES (user_ids(9), game_ids(10), 30.00, TO_DATE('2024-05-26', 'YYYY-MM-DD'), 'N', TO_DATE('2023-02-16', 'YYYY-MM-DD'));
+
+    -- DML for purchases table
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(1), game_ids(1), TO_DATE('2023-01-18', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(2), game_ids(3), TO_DATE('2022-11-25', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(3), game_ids(4), TO_DATE('2023-03-12', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(4), game_ids(5), TO_DATE('2022-07-03', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(5), game_ids(6), TO_DATE('2023-09-08', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(6), game_ids(7), TO_DATE('2022-04-13', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(7), game_ids(8), TO_DATE('2023-06-19', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(8), game_ids(9), TO_DATE('2022-08-26', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(9), game_ids(10), TO_DATE('2023-02-15', 'YYYY-MM-DD'), 'Completed');
+    INSERT INTO purchases (user_id, game_id, purchase_date, status) VALUES (user_ids(10), game_ids(2), TO_DATE('2022-10-05', 'YYYY-MM-DD'), 'Completed');
+
+    -- DML for gamereviews table
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(1), game_ids(1), 4.5, 'Fantastic game, very immersive!', TO_DATE('2023-02-05', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(2), game_ids(3), 5.0, 'Best tactical shooter out there.', TO_DATE('2023-01-10', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(3), game_ids(4), 4.0, 'Endless creativity, great for all ages.', TO_DATE('2023-04-01', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(4), game_ids(5), 4.5, 'Fast-paced action, love the characters.', TO_DATE('2023-07-20', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(5), game_ids(6), 5.0, 'Relaxing and addictive farm sim.', TO_DATE('2023-10-15', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(6), game_ids(7), 4.0, 'Classic open-world experience.', TO_DATE('2023-05-18', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(7), game_ids(8), 4.5, 'Incredibly complex and rewarding factory builder.', TO_DATE('2023-08-22', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(8), game_ids(9), 5.0, 'A masterpiece of storytelling and world-building.', TO_DATE('2023-09-01', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(9), game_ids(10), 3.5, 'Fun with friends, but sometimes too chaotic.', TO_DATE('2023-03-05', 'YYYY-MM-DD'));
+    INSERT INTO gamereviews (user_id, game_id, rating, review_text, review_date) VALUES (user_ids(10), game_ids(2), 4.8, 'Geralt of Rivia is a legend. Best RPG ever.', TO_DATE('2023-11-11', 'YYYY-MM-DD'));
+
+    COMMIT;
+END;
+/
