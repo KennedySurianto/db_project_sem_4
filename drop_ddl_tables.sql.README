@@ -1,0 +1,45 @@
+# Specific Table Deletion Script (delete_ddl_tables.sql)
+
+This script is designed to **permanently delete** only the specific tables that were created by the ddl.sql script. It explicitly lists each table to be dropped, ensuring that no other tables in the schema are affected.
+
+## Tables Targeted for Deletion
+
+The script will attempt to drop the following tables:
+
+* gamereviews
+* purchases
+* userlibrary
+* games
+* userachievements
+* customers
+* developers
+* gameservers
+* genres
+* achievements
+* users
+
+## WARNING - Data Loss!
+
+* This script will permanently remove all data and the table structures for the listed tables from the connected schema.
+* THERE IS NO UNDO once this script is executed and committed.
+* Ensure you have a backup if the data in these tables is valuable.
+* Use with extreme caution.
+
+## How it Works
+
+The script uses DROP TABLE table_name CASCADE CONSTRAINTS; for each specified table. CASCADE CONSTRAINTS ensures that any foreign key constraints referencing the table being dropped are also removed, preventing errors due to dependencies.
+
+## How to Use
+
+1.  Connect to the Correct Schema:
+    * It is crucial to connect as the user who owns these tables (e.g., game_app_user).
+        CONNECT game_app_user/YourSecurePassword123@your_service_name
+    * DO NOT run this script as a SYSDBA or SYSTEM user unless you explicitly understand the consequences, as it might attempt to drop tables in the wrong schema.
+
+2.  Run the Script:
+    * Save this script as delete_ddl_tables.sql.
+    * Execute the script in your Oracle client (e.g., SQL Developer, SQL*Plus) by typing @delete_ddl_tables.sql or running it directly from the IDE.
+
+## Verification
+
+After running, you can try to SELECT * FROM table_name; for any of the listed tables. You should receive an ORA-00942: table or view does not exist error, indicating successful deletion.

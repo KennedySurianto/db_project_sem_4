@@ -1,0 +1,33 @@
+# Comprehensive Table Deletion Script (delete_all_tables.sql)
+
+This script is a powerful tool designed to **permanently delete ALL tables** owned by the currently connected user in an Oracle database. It dynamically queries the USER_TABLES data dictionary view to identify all tables and then generates and executes DROP TABLE statements for each of them.
+
+## WARNING - EXTREME DATA LOSS RISK!
+
+* This script will permanently remove ALL tables and their data from the schema you are connected to.
+* THERE IS NO UNDO once this script is executed and committed.
+* USE THIS SCRIPT WITH THE UTMOST CAUTION.
+* Ensure you have a complete and recent backup of your database or schema if the data is valuable.
+
+## How it Works
+
+The script uses a PL/SQL block to:
+1.  Query user_tables to get the names of all tables owned by the current user.
+2.  For each table found, it constructs and executes a DROP TABLE table_name CASCADE CONSTRAINTS; command.
+3.  CASCADE CONSTRAINTS is used to automatically remove any foreign key relationships that would otherwise prevent the tables from being dropped.
+4.  Includes basic error handling for each drop operation, allowing the script to continue even if some tables cannot be dropped (e.g., due to specific locks or permissions).
+
+## How to Use
+
+1.  Connect to the Target Schema (CRITICAL):
+    * Ensure you are connected to the EXACT schema (user) whose tables you intend to delete.
+        CONNECT your_username/your_password@your_service_name
+    * NEVER run this script as a highly privileged user like SYS AS SYSDBA or SYSTEM unless you are absolutely certain and intend to clear ALL objects across many schemas, which is usually not the desired outcome. Running this as SYS or SYSTEM could lead to catastrophic data loss.
+
+2.  Run the Script:
+    * Save this script as delete_all_tables.sql.
+    * Execute the script in your Oracle client (e.g., SQL Developer, SQL*Plus) by typing @delete_all_tables.sql or running it directly from the IDE.
+
+## Verification
+
+After execution, you can try to query SELECT table_name FROM user_tables;. The result set should be empty, confirming that all tables have been deleted. You can also try to SELECT * FROM any_old_table_name; and expect an ORA-00942: table or view does not exist error.
